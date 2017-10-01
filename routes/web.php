@@ -12,6 +12,12 @@
 */
 
 Route::middleware(['auth'])->group(function () {
+	Route::get('/products','ProductController@show');
+	Route::post('/insert-product','ProductController@insert');
+	Route::post('/insert-stock','StockController@insert');
+	Route::post('/update-product','ProductController@update');
+	Route::get('/delete-product/{id}','ProductController@delete');
+	
 
 });
 
