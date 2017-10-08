@@ -58,21 +58,32 @@
                     <select class="form-control products" name="pro_id">
                             <option value="">Select Product</option>
                         <?php foreach($products as $p): ?>
-                            <option value="{{$p['id']}}">{{$p['name']}}</option>
+                            <option value="{{$p['id']}}" <?php if(isset($data['pro_id'])){ echo $data['pro_id']==$p['id']?'selected':''; } ?> >{{$p['name']}}</option>
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <input type="date" name="from" class="form-control">
-                </div>
 
                 <div class="col-md-3">
+                    <input type="text"
+                    value="<?php if(isset($data['from'])){echo $data['from'];}else{echo date('Y-m-d',strtotime(Carbon\Carbon::now()->startOfMonth()));} ?>"
+
+                    readonly="readonly" id="from" name="from" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <input type="text"
+                    value="<?php if(isset($data['to'])){echo $data['to'];}else{echo date('Y-m-d');} ?>"
+                    readonly="readonly" id="to" name="to" class="form-control">
+                </div>
+                <div class="col-md-3">
                     <input type="submit" class="btn btn-default" name="" value="Search">
+                    <a href="/sale" class="btn btn-danger">Reset</a>
                 </div>
             </form>
             <div class="clearfix"></div>
             <br>
+            @if(count($sale)>0)
             <div class="panel panel-default">                
+                
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -96,7 +107,7 @@
                                 <td>{{number_format($s['unit_sale_price'],2)}}</td>
                                 <td>{{number_format($s['unit_profit'])}}</td>
                                 <td>{{number_format($s['total_profit'])}}</td>
-                                <td><?php echo Carbon\Carbon::createFromTimeStamp(strtotime($s['created_at']))->diffForHumans(); ?></td>
+                                <td><?php echo date('Y-m-d',(strtotime($s['created_at']))); ?></td>
 
                             </tr>
                         <?php endforeach; ?>
@@ -114,7 +125,11 @@
                         </tr>
                     </tfoot>
                 </table>
+                
             </div>
+            @else
+                <div class="alert alert-danger">No Record Found.</div>
+                @endif
             {{ $sale->appends($data)->links() }}
         </div>
     </div>
@@ -153,14 +168,22 @@
 
 @section('css')
 <link rel="stylesheet" type="text/css" href="css/select2.css">
+<link rel="stylesheet" type="text/css" href="css/datepicker.css">
 
 @endsection
 
 @section('js')
 <script src="js/select2.js"></script>
+<script src="js/datepicker.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
         $('.stocks,.products').select2({ placeholder: 'Choose One'});
+    });
+
+    $('#from,#to').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        orientation: 'bottom auto',
     });
 
     $("#stock_id").on("change",function(){

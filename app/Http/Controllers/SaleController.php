@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Sale;
 use App\Stock;
 use App\Product;
+use Carbon\Carbon;
 
 class SaleController extends Controller
 {
@@ -21,8 +22,9 @@ class SaleController extends Controller
         				->join('products','products.id','=','stocks.pro_id')
         				->orderBy('name','asc')
         				->get(['stocks.*','products.name'])->toArray();
-        $sale = Sale::orderBy('created_at','desc')->simplePaginate($this -> per_page);
-        $total = Sale::sum('total_profit');
+        $sale = Sale::whereDate('created_at','>=',Carbon::now()->startOfMonth())->whereDate('created_at','<=',date('Y-m-d'))->orderBy('created_at','desc')->simplePaginate($this -> per_page);
+        
+        $total = Sale::whereDate('created_at','>=',Carbon::now()->startOfMonth())->whereDate('created_at','<=',date('Y-m-d'))->sum('total_profit');
         $products = Product::where('status','1')->get()->toArray();
         $data = [];
     	return view('sale',compact('sale','stock','total','products','data'));
@@ -63,10 +65,20 @@ class SaleController extends Controller
         				->join('products','products.id','=','stocks.pro_id')
         				->orderBy('name','asc')
         				->get(['stocks.*','products.name'])->toArray();
-        $sale = Sale::where('pro_id',$input['pro_id'])->orderBy('created_at','desc')->simplePaginate($this -> per_page);
-        $total = Sale::where('pro_id',$input['pro_id'])->sum('total_profit');
+        
+        $sale = Sale::whereDate('created_at','>=',$input['from'])->whereDate('created_at','<=',$input['to']);
+        $total = Sale::whereDate('created_at','>=',$input['from'])->whereDate('created_at','<=',$input['to']);
+        if(!empty($input['pro_id']))
+        {
+        	$sale = $sale->where('pro_id',$input['pro_id']);
+        	$total = $total->where('pro_id',$input['pro_id']);
+        }
+
+        $sale = $sale->orderBy('created_at','desc')->simplePaginate($this -> per_page);
+        $total = $total->sum('total_profit');
+
         $products = Product::where('status','1')->get()->toArray();
-        $data = ['pro_id'=>$input['pro_id']];
+        $data = ['pro_id'=>$input['pro_id'],'from'=>$input['from'],'to'=>$input['to']];
     	return view('sale',compact('sale','stock','total','products','data'));
         
     }

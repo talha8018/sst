@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Sale;
+use App\Stock;
+use App\Product;
+use Carbon\Carbon;
+use DB;
 
 class HomeController extends Controller
 {
@@ -23,6 +28,14 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $this_profit =Sale::whereDate('created_at','>=',Carbon::now()->startOfMonth())
+            ->whereDate('created_at','<=',Carbon::now())
+            ->select(DB::raw('sum(total_profit) as profit'),DB::raw('sum(quantity) as qty'),'pro_id')->orderBy('profit','desc')->groupBy('pro_id')->limit(10)->get()->toArray();
+
+        $last_profit =Sale::whereDate('created_at','>=',Carbon::now()->startOfMonth()->subMonth())
+            ->whereDate('created_at','<=',Carbon::now()->startOfMonth()->subSecond())
+            ->select(DB::raw('sum(total_profit) as profit'),DB::raw('sum(quantity) as qty'),'pro_id')->orderBy('profit','desc')->groupBy('pro_id')->limit(10)->get()->toArray();
+            
+        return view('home',compact('this_profit','last_profit'));
     }
 }
