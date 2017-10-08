@@ -12,12 +12,29 @@
 */
 
 Route::middleware(['auth'])->group(function () {
+	// Start Products Routes
 	Route::get('/products','ProductController@show');
 	Route::post('/insert-product','ProductController@insert');
-	Route::post('/insert-stock','StockController@insert');
 	Route::post('/update-product','ProductController@update');
 	Route::get('/delete-product/{id}','ProductController@delete');
-	
+	// End Products Routes
+
+
+	// Start Stock Routes
+	Route::get('/stock','StockController@show');
+	Route::post('/update-stock','StockController@update');
+	Route::post('/insert-stock','StockController@insert');
+	Route::get('/delete-stock/{id}','StockController@delete');
+	// End Stock Routes
+
+
+	// Start Sale Routes
+	Route::get('/sale','SaleController@show');
+	Route::post('/insert-sale','SaleController@insert');
+	Route::get('/search-sale','SaleController@search');
+
+	// End Sale Routes
+
 
 });
 

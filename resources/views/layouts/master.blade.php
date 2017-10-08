@@ -50,6 +50,8 @@
 
                                 <ul class="dropdown-menu" role="menu">
                                     <li><a href="/products">Products</a></li>
+                                    <li><a href="/stock">Stock</a></li>
+                                    <li><a href="/sale">Sale</a></li>
                                     <li>
                                         <a href="{{ route('logout') }}"
                                             onclick="event.preventDefault();
@@ -61,11 +63,8 @@
                                             {{ csrf_field() }}
                                         </form>
                                     </li>
-
-
                                 </ul>
                             </li>
-            
                     </ul>
                 </div>
             </div>
